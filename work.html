@@ -1,0 +1,125 @@
+
+<!DOCTYPE html>
+
+<html lang="ru">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Flappy Bird</title>
+
+    <style>
+
+        canvas { background: #70c5ce; display: block; margin: 0 auto; }
+
+    </style>
+
+</head>
+
+<body>
+
+    <canvas id="gameCanvas" width="320" height="480"></canvas>
+
+    <script>
+
+        const canvas = document.getElementById("gameCanvas");
+
+        const ctx = canvas.getContext("2d");
+
+        const bird = { x: 50, y: 200, gravity: 0.6, lift: -15, velocity: 0 };
+
+        const pipes = [];
+
+        let frame = 0;
+
+        let gameOver = false; // Флаг для отслеживания конца игры
+
+        document.addEventListener("keydown", () => {
+
+            if (!gameOver) {
+
+                bird.velocity += bird.lift;
+
+            }
+
+        });
+
+        function drawBird() {
+
+            bird.velocity += bird.gravity;
+
+            bird.y += bird.velocity;
+
+            ctx.fillStyle = "yellow";
+
+            ctx.fillRect(bird.x, bird.y, 20, 20);
+
+        }
+
+        function drawPipes() {
+
+            if (frame % 90 === 0) {
+
+                const pipeHeight = Math.random() * (canvas.height - 100) + 20;
+
+                pipes.push({ x: canvas.width, height: pipeHeight });
+
+            }
+
+            pipes.forEach((pipe, index) => {
+
+                pipe.x -= 2;
+
+                ctx.fillStyle = "green";
+
+                ctx.fillRect(pipe.x, 0, 20, pipe.height);
+
+                ctx.fillRect(pipe.x, pipe.height + 100, 20, canvas.height - pipe.height - 100);
+
+                // Проверка на столкновение с трубами
+
+                if (bird.x < pipe.x + 20 && bird.x + 20 > pipe.x && (bird.y < pipe.height || bird.y + 20 > pipe.height + 100)) {
+
+                    gameOver = true;
+
+                    alert("Game Over! Поставьте зачёт");
+
+                }
+
+                // Удаление трубы, если она вышла за экран
+
+                if (pipe.x < 0) pipes.splice(index, 1);
+
+            });
+
+        }
+
+        function gameLoop() {
+
+            if (!gameOver) {
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+                drawBird();
+
+                drawPipes();
+
+                frame++;
+
+                requestAnimationFrame(gameLoop);
+
+            }
+
+        }
+
+        gameLoop();
+
+    </script>
+
+</body>
+
+</html>
+
